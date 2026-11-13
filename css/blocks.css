@@ -1,0 +1,834 @@
+/* ===========================================================
+   Аренда Плюс — выездные аренда мебели. Блоки.
+   Токены и каркас — base.css. Мобильные правила — только
+   в @media в конце файла, не вперемешку.
+   Кнопки-<button> писать через .tpl-root: сброс
+   .tpl-root button{background:none;border:0} специфичнее
+   одиночного класса и иначе гасит заливку.
+   =========================================================== */
+
+/* ─────────────── 01 · ПЕРВЫЙ ЭКРАН ───────────────
+   Хиро и доказательства живут на одной серой плашке: без неё
+   в скруглениях баннера просвечивал белый. */
+.tpl-top{
+  background:var(--tpl-surface-page);
+  border-radius:0 0 32px 32px;
+  overflow:hidden;
+}
+
+.tpl-hero{
+  position:relative;
+  background:var(--tpl-ink);
+  color:#fff;
+  border-radius:0 0 32px 32px;
+  overflow:hidden;
+}
+.tpl-root .tpl-hero__bg{
+  position:absolute;inset:0;
+  object-fit:cover;width:100%;height:100%;
+  object-position:60% 50%;
+  opacity:.7;
+}
+.tpl-hero__scrim{
+  position:absolute;inset:0;
+  background:linear-gradient(100deg,rgba(49,45,43,.94) 0%,rgba(49,45,43,.86) 38%,rgba(49,45,43,.5) 70%,rgba(49,45,43,.3) 100%);
+}
+.tpl-hero__inner{position:relative;padding:88px 0 88px;max-width:860px}
+.tpl-hero__eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:13px;line-height:18px;font-weight:var(--tpl-fw-medium);
+  padding:6px 12px;border-radius:var(--tpl-radius-pill);
+  background:rgba(255,255,255,.12);color:#fff;margin-bottom:20px;
+}
+/* Заголовок первого экрана — одна фраза, но в h1 уходит только ключевая
+   часть: продолжение лежит соседним абзацем и выведено inline, поэтому
+   визуально это по-прежнему один заголовок в одну строку. */
+.tpl-hero__title{
+  font-family:var(--tpl-font-head);
+  font-size:40px;line-height:48px;font-weight:var(--tpl-fw-medium);
+  letter-spacing:-.02em;color:#fff;margin-bottom:20px;
+}
+.tpl-hero h1,
+.tpl-hero__claim{display:inline;font:inherit;letter-spacing:inherit;color:inherit;margin:0}
+.tpl-hero__hl{color:var(--tpl-accent)}
+.tpl-hero__sub{font-size:18px;line-height:28px;color:rgba(255,255,255,.78);max-width:640px}
+.tpl-proof{padding:28px 0 36px}
+.tpl-proof__grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:28px;
+}
+.tpl-proof__item{position:relative;padding-top:16px}
+.tpl-proof__item::before{
+  content:'';position:absolute;left:0;top:0;
+  width:28px;height:3px;border-radius:2px;background:var(--tpl-accent);
+}
+.tpl-proof__item b{
+  display:block;font-family:var(--tpl-font-head);
+  font-size:16px;line-height:22px;font-weight:var(--tpl-fw-medium);
+  color:var(--tpl-ink);margin-bottom:4px;
+}
+/* Серый, но не .5 от чернил: на #F6F6F6 это уходит за границу
+   читаемости. .62 даёт визуально тот же приглушённый тон и ~5:1. */
+.tpl-proof__item span{
+  display:block;font-size:14px;line-height:20px;color:rgba(49,45,43,.62);
+}
+.tpl-hero__acts{display:flex;gap:12px;flex-wrap:wrap;margin-top:36px}
+.tpl-root .tpl-hero__acts .tpl-btn--ghost{
+  background:transparent;color:#fff;border-color:rgba(255,255,255,.3);
+}
+.tpl-root .tpl-hero__acts .tpl-btn--ghost:hover{border-color:#fff;color:#fff}
+
+/* ─────────────── 02 · ЛИД-АБЗАЦ ───────────────
+   Первый текстовый блок в DOM. Плитки категорий выше него
+   быть не должно: робот берёт первый связный текст в сниппет. */
+.tpl-leadblock{padding:40px 0 8px}
+.tpl-leadblock p{font-size:18px;line-height:28px;max-width:860px;color:var(--tpl-ink)}
+.tpl-leadblock p + p{margin-top:16px}
+.tpl-intro{max-width:860px;margin-top:8px}
+.tpl-intro{font-size:18px;line-height:28px;color:var(--tpl-text-secondary)}
+.tpl-intro + .tpl-intro{margin-top:14px}
+
+/* ─────────────── 03 · КАЛЬКУЛЯТОР ───────────────
+   Ответ сверху во всю ширину, ввод под ним, одна геометрия на десктоп
+   и мобильный. Раньше ответ стоял справа: на мобильном правая колонка
+   становится нижней, и число уезжало на два экрана от чипов —
+   человек тапал и не видел отклика. */
+
+/* Десктоп — две колонки в один ряд: слева ввод, справа результат.
+   Обе полосы по отдельности наполовину пустые, а вместе занимают
+   две ширины экрана.
+   В РАЗМЕТКЕ результат идёт ПЕРВЫМ и трогать этот порядок нельзя:
+   на мобильном колонки схлопываются в одну, и результат обязан
+   оказаться над вводом. Иначе между чипом и суммой снова окажется
+   полтора экрана, человек тапнет и не увидит отклика. Поэтому
+   местами их меняет grid-column, а не порядок узлов. */
+.tpl-calc{
+  display:grid;
+  grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);
+  gap:16px;align-items:start;
+}
+.tpl-calc__out{grid-column:2}
+.tpl-calc__form{grid-column:1;grid-row:1}
+
+/* ── карточка ответа ── */
+.tpl-calc__out{
+  background:var(--tpl-ink);color:#fff;
+  border-radius:var(--tpl-radius-lg);padding:28px;
+  position:sticky;top:96px;
+}
+.tpl-calc__answer{
+  font-family:var(--tpl-font-head);
+  font-size:24px;line-height:32px;font-weight:var(--tpl-fw-medium);
+  letter-spacing:-.01em;
+}
+.tpl-calc__answer b{color:var(--tpl-accent-soft);font-weight:var(--tpl-fw-medium)}
+.tpl-calc__why{
+  margin-top:10px;font-size:15px;line-height:22px;color:rgba(255,255,255,.6);
+  max-width:620px;
+}
+
+.tpl-calc__total{
+  display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;
+  margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,.14);
+}
+.tpl-calc__total-sum{
+  font-family:var(--tpl-font-head);
+  font-size:40px;line-height:48px;font-weight:var(--tpl-fw-medium);
+  font-variant-numeric:tabular-nums;
+}
+.tpl-calc__total-per{font-size:16px;line-height:24px;color:rgba(255,255,255,.7)}
+.tpl-calc__total-per span{color:rgba(255,255,255,.4)}
+
+/* подсказка про лишний час — не текст, а действие: она несёт главную мысль
+   страницы и срабатывает примерно в четверти расчётов */
+.tpl-root .tpl-calc__tip{
+  display:inline-flex;align-items:center;gap:8px;margin-top:16px;
+  padding:10px 16px;border-radius:var(--tpl-radius-pill);
+  background:rgba(254,93,38,.18);border:1px solid rgba(254,93,38,.34);
+  color:#fff;font-size:14px;line-height:20px;text-align:left;cursor:pointer;
+  transition:background-color var(--tpl-transition);
+}
+.tpl-root .tpl-calc__tip:hover{background:rgba(254,93,38,.3)}
+
+.tpl-calc__breakdown{margin-top:18px;border-top:1px solid rgba(255,255,255,.14)}
+.tpl-root .tpl-calc__breakdown summary{
+  padding:14px 0 0;font-size:14px;line-height:20px;color:rgba(255,255,255,.6);
+  cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px;
+}
+.tpl-calc__breakdown summary::-webkit-details-marker{display:none}
+.tpl-calc__breakdown summary::after{
+  content:'';width:7px;height:7px;border-right:1.5px solid currentColor;
+  border-bottom:1.5px solid currentColor;transform:rotate(45deg);margin-top:-3px;
+}
+.tpl-calc__breakdown[open] summary::after{transform:rotate(-135deg);margin-top:2px}
+.tpl-calc__breakdown summary:hover{color:#fff}
+.tpl-calc__rows{margin-top:8px}
+.tpl-calc__rows li{
+  display:grid;grid-template-columns:1fr auto;gap:2px 12px;
+  padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08);
+  font-size:14px;line-height:20px;
+}
+.tpl-calc__rows li:last-child{border-bottom:0}
+.tpl-calc__row-name{font-weight:var(--tpl-fw-medium)}
+.tpl-calc__row-meta{grid-column:1;font-size:12px;color:rgba(255,255,255,.4)}
+.tpl-calc__row-sum{grid-row:1;grid-column:2;font-variant-numeric:tabular-nums}
+.tpl-calc__rows li.tpl-calc__row--minus .tpl-calc__row-sum{color:var(--tpl-success)}
+
+.tpl-calc__acts{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+.tpl-root .tpl-calc__acts .tpl-btn--ghost{
+  background:transparent;color:#fff;border-color:rgba(255,255,255,.3);
+}
+.tpl-root .tpl-calc__acts .tpl-btn--ghost:hover{border-color:#fff;color:#fff}
+.tpl-calc__note{margin-top:16px;font-size:12px;line-height:18px;color:rgba(255,255,255,.4)}
+
+/* ── ввод: три ряда «подпись — чипы» ── */
+.tpl-calc__form{
+  background:var(--tpl-surface-card);border:var(--tpl-border);
+  border-radius:var(--tpl-radius-lg);padding:20px 24px;
+}
+.tpl-row{
+  display:grid;grid-template-columns:92px 1fr;gap:12px;align-items:center;
+  padding:12px 0;
+}
+.tpl-row:has(.tpl-row__hint){grid-template-columns:1fr;gap:10px;align-items:start}
+.tpl-row + .tpl-row{border-top:1px solid var(--tpl-border-soft)}
+.tpl-row--themes{grid-template-columns:1fr;gap:10px;align-items:start}
+.tpl-row__hint{
+  display:block;margin-top:2px;font-size:12px;line-height:16px;
+  font-weight:400;color:var(--tpl-text-muted);
+}
+.tpl-row__label{
+  font-size:14px;line-height:20px;font-weight:var(--tpl-fw-medium);
+  color:var(--tpl-text-secondary);
+}
+.tpl-chips{display:flex;gap:8px;flex-wrap:wrap}
+.tpl-root .tpl-chip{
+  height:46px;padding:0 18px;border-radius:var(--tpl-radius-pill);
+  border:1px solid var(--tpl-border-color);background:var(--tpl-surface-card);
+  font-size:14px;line-height:20px;color:var(--tpl-ink);cursor:pointer;
+  transition:border-color var(--tpl-transition),background-color var(--tpl-transition),
+    color var(--tpl-transition);
+  display:inline-flex;align-items:center;gap:6px;white-space:nowrap;
+}
+.tpl-root .tpl-chip:hover{border-color:var(--tpl-accent)}
+.tpl-root .tpl-chip.tpl-on{background:var(--tpl-ink);border-color:var(--tpl-ink);color:#fff}
+.tpl-chip small{font-size:12px;opacity:.55}
+.tpl-root .tpl-chip--input{
+  width:82px;padding:0 12px;text-align:center;
+  font-variant-numeric:tabular-nums;
+}
+/* Тема в две строки: название и под ним пропускная способность словами.
+   «50 чел./час» одной строкой не читалось — непонятно, к чему число. */
+.tpl-root .tpl-chip--two{
+  height:auto;padding:8px 18px;flex-direction:column;
+  align-items:flex-start;gap:1px;text-align:left;
+}
+.tpl-chip__name{font-size:14px;line-height:20px;font-weight:var(--tpl-fw-medium)}
+.tpl-chip__cap{font-size:12px;line-height:16px;color:var(--tpl-text-secondary)}
+.tpl-root .tpl-chip--two.tpl-on .tpl-chip__cap{color:rgba(255,255,255,.6)}
+.tpl-root .tpl-chip[hidden]{display:none}
+.tpl-root .tpl-chip--input::placeholder{color:var(--tpl-text-muted)}
+.tpl-root .tpl-chip--input:focus{outline:0;border-color:var(--tpl-accent);box-shadow:var(--tpl-shadow-focus)}
+.tpl-chip--input::-webkit-outer-spin-button,
+.tpl-chip--input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.tpl-check{display:inline-flex;align-items:center;gap:10px;font-size:14px;cursor:pointer}
+
+/* ── «Уточнить» ── */
+.tpl-more{margin-top:8px;border-top:1px solid var(--tpl-border-soft)}
+.tpl-root .tpl-more > summary{
+  padding:16px 0 4px;font-size:14px;line-height:20px;color:var(--tpl-accent);
+  cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:8px;
+}
+.tpl-more > summary::-webkit-details-marker{display:none}
+.tpl-more > summary::after{
+  content:'';width:7px;height:7px;border-right:1.5px solid currentColor;
+  border-bottom:1.5px solid currentColor;transform:rotate(45deg);margin-top:-3px;
+}
+.tpl-more[open] > summary::after{transform:rotate(-135deg);margin-top:2px}
+.tpl-more__body{padding-top:4px}
+
+/* ─────────────── 04 · ИЗ ЧЕГО СКЛАДЫВАЕТСЯ СМЕТА ───────────────
+   Пять карточек вместо двух списков: строки прайса читаются
+   поштучно, а не как договор мелким шрифтом. */
+
+/* ─────────────── 04 · СВОЁ БЮРО ─────────────── */
+.tpl-byuro{
+  display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);
+  gap:var(--tpl-space-10);align-items:center;
+}
+.tpl-root .tpl-byuro__video{
+  width:100%;height:auto;display:block;border-radius:var(--tpl-radius-lg);
+  background:var(--tpl-surface-placeholder);
+}
+.tpl-byuro__text .tpl-intro{max-width:none}
+.tpl-tocalc--left{justify-content:flex-start;margin-top:var(--tpl-space-6)}
+
+/* ─────────────── 05 · КАТАЛОГ ─────────────── */
+.tpl-cat__filters{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:24px}
+.tpl-cat__fgroup{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tpl-cat__fgroup > span{font-size:13px;color:var(--tpl-text-secondary)}
+.tpl-cat__grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:var(--tpl-grid-gap);
+}
+.tpl-cat__grid > :nth-child(n+13){display:none}
+/* :not([hidden]) — отбор прячет чужие карточки атрибутом, и без этой оговорки
+   «Показать все» возвращало их обратно на экран */
+.tpl-cat__grid.tpl-full > :nth-child(n+13):not([hidden]){display:flex}
+
+.tpl-tile{
+  display:flex;flex-direction:column;
+  border:var(--tpl-border);border-radius:var(--tpl-radius-lg);
+  overflow:hidden;background:var(--tpl-surface-card);
+  transition:box-shadow var(--tpl-transition),border-color var(--tpl-transition);
+}
+.tpl-tile:hover{box-shadow:var(--tpl-shadow-hover);border-color:transparent}
+.tpl-root .tpl-tile__img{aspect-ratio:4/3;object-fit:cover;width:100%;height:auto;background:var(--tpl-surface-placeholder)}
+.tpl-tile__body{padding:16px;display:flex;flex-direction:column;gap:6px;flex:1}
+.tpl-tile__name{font-size:16px;line-height:24px;font-weight:var(--tpl-fw-medium)}
+.tpl-tile__price{
+  font-size:16px;line-height:24px;font-weight:var(--tpl-fw-semibold);
+  color:var(--tpl-accent-hover);
+}
+.tpl-tile__price small{font-weight:400;color:var(--tpl-text-muted);font-size:13px}
+.tpl-tile__meta{font-size:13px;line-height:18px;color:var(--tpl-text-secondary);margin-top:auto}
+.tpl-cat__more,
+.tpl-tocalc{display:flex;justify-content:center;gap:var(--tpl-space-3);flex-wrap:wrap;margin-top:24px}
+
+/* ─────────────── 06 · ЧТО ДЕЛАЕМ МЫ / ЧТО ОТ ВАС ─────────────── */
+.tpl-scope__grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.tpl-scope__col{
+  border-radius:var(--tpl-radius-lg);padding:24px;border:var(--tpl-border);
+}
+.tpl-section--dark .tpl-scope__col{
+  background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12);
+}
+.tpl-section--dark .tpl-scope__col--we{
+  background:var(--tpl-accent);border-color:transparent;
+}
+.tpl-section--dark .tpl-list li::before{border-color:#fff}
+.tpl-scope__col--we{background:var(--tpl-accent-tint);border-color:transparent}
+.tpl-scope__col h3{font-family:var(--tpl-font-head);font-size:20px;line-height:28px;font-weight:var(--tpl-fw-semibold);margin-bottom:16px}
+.tpl-list li{
+  position:relative;padding-left:26px;font-size:15px;line-height:24px;
+}
+.tpl-list li + li{margin-top:10px}
+.tpl-list li::before{
+  content:'';position:absolute;left:0;top:9px;width:14px;height:6px;
+  border-left:2px solid var(--tpl-accent);border-bottom:2px solid var(--tpl-accent);
+  transform:rotate(-45deg);border-radius:1px;
+}
+
+/* ─────────────── 06a · ПРИВЕЗЁМ ВСЁ ─────────────── */
+.tpl-kit__grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--tpl-grid-gap)}
+.tpl-root .tpl-kit__item{
+  display:flex;flex-direction:column;padding:20px;color:var(--tpl-ink);
+  background:var(--tpl-surface-card);border:var(--tpl-border);border-radius:var(--tpl-radius-lg);
+  transition:box-shadow var(--tpl-transition),border-color var(--tpl-transition);
+}
+.tpl-root .tpl-kit__item:hover{box-shadow:var(--tpl-shadow-hover);border-color:transparent}
+.tpl-kit__item:hover b{color:var(--tpl-accent-hover)}
+.tpl-kit__ico,
+.tpl-docs__ico{
+  width:40px;height:40px;border-radius:var(--tpl-radius-md);
+  background:var(--tpl-accent-tint);color:var(--tpl-accent);
+  display:flex;align-items:center;justify-content:center;margin-bottom:16px;
+}
+.tpl-kit__ico svg,
+.tpl-docs__ico svg{width:22px;height:22px}
+.tpl-kit__item b{font-size:16px;line-height:24px;font-weight:var(--tpl-fw-medium);margin-bottom:6px}
+.tpl-kit__item span:last-child{font-size:14px;line-height:20px;color:var(--tpl-text-secondary)}
+
+/* ─────────────── 07 · ПРОПУСКНАЯ СПОСОБНОСТЬ ─────────────── */
+.tpl-table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.tpl-table th,.tpl-table td{
+  text-align:left;padding:14px 12px;border-bottom:1px solid var(--tpl-border-color);
+  font-size:15px;line-height:22px;
+}
+.tpl-table th{
+  font-size:13px;line-height:18px;font-weight:var(--tpl-fw-medium);
+  color:var(--tpl-text-secondary);border-bottom-width:1px;
+}
+.tpl-table td:first-child{font-weight:var(--tpl-fw-medium);width:24%}
+/* Отступ справа у колонки с полоской: цифра стоит сразу за полоской и
+   при полной длине наезжала на соседнюю колонку. Полоски считают
+   проценты от суженного бокса, так что пропорции не едут. */
+.tpl-table td:nth-child(2){width:36%;padding-right:68px}
+.tpl-table td.tpl-num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+/* Полоска делает пятикратный разброс видимым без чтения цифр —
+   ради этого разброса вся страница и затевалась. */
+.tpl-flow{display:flex;align-items:center;gap:10px}
+.tpl-flow__line{
+  height:8px;border-radius:var(--tpl-radius-pill);
+  background:var(--tpl-accent);flex:none;min-width:8px;
+}
+.tpl-flow__val{font-variant-numeric:tabular-nums;white-space:nowrap}
+.tpl-table tr:hover td{background:var(--tpl-surface-sunken)}
+.tpl-table__wrap{overflow-x:auto}
+
+
+/* ─────────────── 08 · ФОРМАТЫ ВЖИВУЮ ───────────────
+   Единственный блок, где фотография ведёт, а текст идёт следом.
+   Две плитки из шести — широкие: ритм внутри сетки, чтобы шесть
+   одинаковых прямоугольников не читались как ещё одна таблица. */
+.tpl-live{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:var(--tpl-grid-gap);
+}
+/* Подпись стоит ПОД фотографией, а не поверх: в узкой плитке текст
+   поверх кадра закрывал сам кадр и читался плохо на светлых снимках. */
+.tpl-live__item{
+  margin:0;display:flex;flex-direction:column;overflow:hidden;
+  border-radius:var(--tpl-radius-lg);
+  background:var(--tpl-surface-card);border:var(--tpl-border);
+  transition:box-shadow var(--tpl-transition),border-color var(--tpl-transition);
+}
+.tpl-live__item:hover{box-shadow:var(--tpl-shadow-hover);border-color:transparent}
+.tpl-live__item--wide{grid-column:span 2}
+/* Высота кадра одна на весь ряд: у широкой плитки пропорция 8/3 давала
+   лишние несколько пикселей, и низ фотографий в ряду не совпадал. */
+.tpl-root .tpl-live__item img{
+  width:100%;height:clamp(170px,17.6vw,236px);object-fit:cover;
+  background:var(--tpl-surface-placeholder);
+}
+.tpl-live__item figcaption{padding:16px 18px 18px}
+.tpl-live__item figcaption b{
+  display:block;font-family:var(--tpl-font-head);
+  font-size:17px;line-height:24px;font-weight:var(--tpl-fw-medium);
+  color:var(--tpl-ink);margin-bottom:6px;
+}
+.tpl-live__item figcaption span{
+  font-size:14px;line-height:20px;color:var(--tpl-text-secondary);
+}
+
+/* ─────────────── РАЗБИВКА С ФОРМОЙ ───────────────
+   Кадр во всю ширину, затемнение по всему кадру и форма прямо на нём.
+   Конвенция кейтеринга: там же живут поля .tpl-field__control. */
+.tpl-band{position:relative;height:56vh;min-height:470px;overflow:hidden;background:var(--tpl-ink)}
+.tpl-root .tpl-band img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.tpl-band::after{content:"";position:absolute;inset:0;background:var(--tpl-scrim)}
+.tpl-band__in{
+  position:relative;z-index:1;height:100%;display:flex;align-items:flex-end;
+  justify-content:space-between;gap:var(--tpl-space-8);padding-bottom:var(--tpl-space-10);
+}
+.tpl-band__text{color:#fff;max-width:620px}
+.tpl-band__title{
+  font-family:var(--tpl-font-head);font-size:32px;line-height:40px;
+  font-weight:var(--tpl-fw-medium);letter-spacing:-.02em;
+}
+.tpl-band__text p{font-size:17px;line-height:26px;color:rgba(255,255,255,.8);margin-top:var(--tpl-space-3)}
+.tpl-band__form,
+.tpl-band__done{
+  flex:0 0 340px;padding:var(--tpl-space-5);border-radius:var(--tpl-radius-lg);
+  background:rgba(49,45,43,.82);backdrop-filter:blur(10px);color:#fff;
+}
+.tpl-band__form{display:flex;flex-direction:column;gap:var(--tpl-space-2)}
+.tpl-band__form-t{font-size:15px;line-height:22px;font-weight:var(--tpl-fw-medium);margin-bottom:var(--tpl-space-1)}
+.tpl-band__form .tpl-field__control{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.2)}
+.tpl-band__form .tpl-field__control::placeholder{color:rgba(255,255,255,.45)}
+.tpl-band__form .tpl-field__control:focus{background:rgba(255,255,255,.12);border-color:var(--tpl-accent)}
+.tpl-band__form .tpl-field__control.tpl-bad{border-color:var(--tpl-error)}
+/* иконка календаря у поля даты рисуется тёмной — на тёмной форме её
+   не видно, поэтому инвертируем */
+.tpl-band__form input[type="date"]::-webkit-calendar-picker-indicator,
+.tpl-final__form input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.7;cursor:pointer}
+.tpl-band__done{display:flex;gap:var(--tpl-space-3);align-items:flex-start;font-size:14px;line-height:20px;color:rgba(255,255,255,.75)}
+.tpl-band__done b{display:block;font-size:16px;line-height:24px;color:#fff;font-weight:var(--tpl-fw-medium);margin-bottom:2px}
+.tpl-band__done-ico{
+  flex:0 0 auto;width:28px;height:28px;border-radius:var(--tpl-radius-full);
+  background:var(--tpl-success);display:flex;align-items:center;justify-content:center;
+}
+.tpl-band__done-ico svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+
+/* ─────────────── ЛЕНТА КАДРОВ ───────────────
+   Высота у всех кадров одна, ширина своя — вертикальные снимки не режем.
+   Лента живёт внутри контейнера: иначе полоса прокрутки тянулась во всю
+   ширину экрана, а кадры начинались по сетке макета. */
+.tpl-strip{
+  display:flex;gap:var(--tpl-grid-gap);overflow-x:auto;overscroll-behavior-x:contain;
+  scrollbar-width:thin;cursor:grab;
+  scrollbar-color:var(--tpl-border-color) transparent;
+  padding-bottom:var(--tpl-space-4);
+}
+.tpl-root .tpl-strip img{
+  flex:0 0 auto;height:360px;width:auto;max-width:none;
+  border-radius:var(--tpl-radius-lg);
+  background:var(--tpl-surface-placeholder);
+}
+/* тянем ленту левой кнопкой: курсор и запрет выделения — половина ощущения */
+.tpl-strip.tpl-drag{cursor:grabbing}
+.tpl-root .tpl-strip img{cursor:zoom-in;user-select:none;-webkit-user-drag:none}
+.tpl-strip::-webkit-scrollbar{height:6px}
+.tpl-strip::-webkit-scrollbar-track{background:transparent}
+.tpl-strip::-webkit-scrollbar-thumb{background:var(--tpl-border-color);border-radius:var(--tpl-radius-pill)}
+.tpl-strip::-webkit-scrollbar-thumb:hover{background:var(--tpl-accent-soft)}
+
+/* ─────────────── ПОПАП КАДРА ─────────────── */
+.tpl-lb{
+  position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+  background:rgba(20,18,17,.93);padding:48px;
+}
+.tpl-root .tpl-lb__img{
+  max-width:calc(100% - 120px);max-height:100%;width:auto;height:auto;
+  border-radius:var(--tpl-radius-md);cursor:default;
+}
+.tpl-root .tpl-lb button{position:absolute;color:#fff;padding:0}
+.tpl-lb__close{top:16px;right:20px;width:44px;height:44px}
+.tpl-lb__close::before,
+.tpl-lb__close::after{content:"";position:absolute;left:12px;top:21px;width:20px;height:2px;background:currentColor}
+.tpl-lb__close::before{transform:rotate(45deg)}
+.tpl-lb__close::after{transform:rotate(-45deg)}
+.tpl-lb__nav{
+  top:50%;margin-top:-22px;width:44px;height:44px;border-radius:var(--tpl-radius-full);
+  background:rgba(255,255,255,.12);transition:background var(--tpl-transition);
+}
+.tpl-lb__nav:hover{background:rgba(255,255,255,.22)}
+.tpl-lb__nav::before{
+  content:"";position:absolute;top:15px;width:12px;height:12px;
+  border-left:2px solid currentColor;border-top:2px solid currentColor;
+}
+.tpl-lb__nav--prev{left:16px}
+.tpl-lb__nav--prev::before{left:17px;transform:rotate(-45deg)}
+.tpl-lb__nav--next{right:16px}
+.tpl-lb__nav--next::before{left:12px;transform:rotate(135deg)}
+
+/* ─────────────── 09 · КЕЙСЫ ─────────────── */
+.tpl-cases__grid{
+  display:grid;grid-template-columns:repeat(2,1fr);
+  grid-auto-rows:1fr;gap:var(--tpl-grid-gap);
+}
+.tpl-case{
+  display:grid;grid-template-columns:200px 1fr;gap:20px;
+  border:var(--tpl-border);border-radius:var(--tpl-radius-lg);
+  overflow:hidden;background:var(--tpl-surface-card);
+}
+.tpl-root .tpl-case__img{width:100%;height:100%;object-fit:cover;min-height:180px}
+.tpl-case__body{padding:20px 20px 20px 0;display:flex;flex-direction:column;gap:10px}
+.tpl-case__name{
+  font-size:16px;line-height:24px;font-weight:var(--tpl-fw-medium);
+  min-height:48px;
+}
+.tpl-case__nums{display:flex;gap:20px;flex-wrap:wrap;margin-top:auto}
+.tpl-case__num b{display:block;font-size:18px;line-height:26px;font-weight:var(--tpl-fw-medium)}
+.tpl-case__num span{font-size:12px;line-height:16px;color:var(--tpl-text-secondary)}
+
+/* ─────────────── 10 · СВОЯ ПЛОЩАДКА ─────────────── */
+.tpl-venue{background:var(--tpl-ink);color:#fff;border-radius:var(--tpl-radius-lg)}
+.tpl-venue__grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--tpl-grid-gap);margin-top:24px}
+.tpl-venue__item{
+  padding:20px;border-radius:var(--tpl-radius-md);
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);
+}
+.tpl-venue__item b{display:block;font-size:16px;line-height:24px;margin-bottom:6px}
+.tpl-venue__item span{font-size:14px;line-height:20px;color:rgba(255,255,255,.6)}
+.tpl-venue__cap{
+  display:inline-block;margin-bottom:10px;padding:4px 10px;
+  border-radius:var(--tpl-radius-pill);
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);
+  color:var(--tpl-accent-soft);
+  font-size:13px;font-weight:var(--tpl-fw-medium);
+}
+
+/* ─────────────── 11 · ДЛЯ БУХГАЛТЕРИИ ─────────────── */
+.tpl-docs__grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--tpl-grid-gap)}
+.tpl-docs__item{
+  padding:20px;border:var(--tpl-border);border-radius:var(--tpl-radius-md);
+  background:var(--tpl-surface-card);
+}
+.tpl-docs__item b{display:block;font-size:16px;line-height:24px;margin-bottom:6px}
+.tpl-docs__item span{font-size:14px;line-height:20px;color:var(--tpl-text-secondary)}
+/* иконка тоже span, и правило выше её перекрашивало */
+.tpl-docs__item .tpl-docs__ico{color:var(--tpl-accent)}
+
+/* ─────────────── 13 · КАК ПРОХОДИТ ─────────────── */
+.tpl-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--tpl-grid-gap)}
+.tpl-step__n{
+  width:36px;height:36px;border-radius:var(--tpl-radius-full);
+  background:var(--tpl-accent);color:#fff;display:flex;align-items:center;
+  justify-content:center;font-weight:var(--tpl-fw-medium);margin-bottom:12px;
+}
+.tpl-step b{display:block;font-size:16px;line-height:24px;margin-bottom:6px}
+.tpl-step span{font-size:14px;line-height:20px;color:var(--tpl-text-secondary)}
+
+/* ─────────────── 16 · FAQ ─────────────── */
+.tpl-faq{display:flex;flex-direction:column}
+.tpl-faq__item{border-bottom:1px solid var(--tpl-border-color)}
+.tpl-root .tpl-faq__item summary{
+  list-style:none;cursor:pointer;position:relative;padding:20px 40px 20px 0;
+  font-size:16px;line-height:24px;font-weight:var(--tpl-fw-medium);
+}
+.tpl-faq__item summary::-webkit-details-marker{display:none}
+.tpl-faq__item summary:hover{color:var(--tpl-accent)}
+.tpl-faq__item summary::after{
+  content:"";position:absolute;right:8px;top:28px;width:8px;height:8px;
+  border-right:2px solid var(--tpl-text-secondary);border-bottom:2px solid var(--tpl-text-secondary);
+  transform:rotate(45deg);transition:transform var(--tpl-transition);
+}
+.tpl-faq__item[open] summary::after{transform:rotate(-135deg);top:32px}
+.tpl-faq__a{padding:0 40px 20px 0}
+.tpl-faq__a p{font-size:15px;line-height:23px;color:var(--tpl-text-secondary)}
+
+/* ─────────────── 17 · ПЕРЕЛИНКОВКА ─────────────── */
+.tpl-tags{display:flex;gap:10px;flex-wrap:wrap}
+.tpl-tags a{
+  display:inline-flex;height:44px;align-items:center;padding:0 20px;
+  border-radius:var(--tpl-radius-pill);
+  border:1px solid var(--tpl-accent-soft);background:var(--tpl-accent-tint);
+  color:var(--tpl-accent-hover);
+  font-size:16px;line-height:24px;font-weight:var(--tpl-fw-medium);
+}
+.tpl-tags a:hover{border-color:var(--tpl-accent);background:var(--tpl-accent);color:#fff}
+/* первая пилюля ведёт во весь каталог — её видно сразу */
+.tpl-root .tpl-tags__all{background:var(--tpl-accent);border-color:var(--tpl-accent);color:#fff}
+.tpl-root .tpl-tags__all:hover{background:var(--tpl-accent-hover);border-color:var(--tpl-accent-hover)}
+
+/* ─────────────── 18 · ФИНАЛЬНАЯ ФОРМА ─────────────── */
+.tpl-final__grid{
+  display:grid;grid-template-columns:minmax(0,1fr) 420px;
+  gap:var(--tpl-space-10);align-items:start;
+}
+.tpl-final__facts{display:flex;flex-direction:column;gap:var(--tpl-space-4);margin-top:var(--tpl-space-8)}
+.tpl-final__facts li{display:flex;align-items:baseline;gap:var(--tpl-space-3)}
+.tpl-final__facts b{
+  font-size:20px;line-height:28px;font-weight:var(--tpl-fw-medium);color:var(--tpl-accent);
+  white-space:nowrap;font-variant-numeric:tabular-nums;
+}
+.tpl-final__facts span{font-size:14px;line-height:21px;color:rgba(255,255,255,.65)}
+.tpl-final__text .tpl-intro{color:rgba(255,255,255,.6)}
+.tpl-final__contacts{
+  margin-top:var(--tpl-space-8);padding-top:var(--tpl-space-6);
+  border-top:1px solid rgba(255,255,255,.12);
+  font-size:15px;line-height:24px;color:rgba(255,255,255,.7);
+}
+.tpl-final__contacts a{color:#fff;font-weight:var(--tpl-fw-medium)}
+.tpl-final__form{
+  background:rgba(255,255,255,.06);padding:var(--tpl-space-6);border-radius:var(--tpl-radius-lg);
+  display:flex;flex-direction:column;gap:var(--tpl-space-4);
+}
+.tpl-final__form .tpl-field__label{color:rgba(255,255,255,.55)}
+.tpl-final__form .tpl-field__control{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18);color:#fff}
+.tpl-final__form .tpl-field__control::placeholder{color:rgba(255,255,255,.35)}
+.tpl-final__form .tpl-field__control:focus{border-color:var(--tpl-accent);background:rgba(255,255,255,.12)}
+.tpl-final__micro{font-size:12px;line-height:17px;color:rgba(255,255,255,.45)}
+/* Успех должен читаться сразу: галочка, зелёная рамка, крупный заголовок. */
+.tpl-final__done{
+  grid-column:1 / -1;display:flex;gap:var(--tpl-space-4);align-items:flex-start;
+  padding:var(--tpl-space-6);border-radius:var(--tpl-radius-lg);
+  background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.5);
+  font-size:15px;line-height:23px;color:rgba(255,255,255,.75);
+}
+.tpl-final__done b{
+  display:block;font-family:var(--tpl-font-head);font-size:22px;line-height:30px;
+  font-weight:var(--tpl-fw-medium);color:#fff;margin-bottom:4px;
+}
+.tpl-final__done-ico{
+  flex:0 0 auto;width:40px;height:40px;border-radius:var(--tpl-radius-full);
+  background:var(--tpl-success);display:flex;align-items:center;justify-content:center;
+}
+.tpl-final__done-ico svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.tpl-form__err{font-size:13px;line-height:18px;color:var(--tpl-error)}
+.tpl-band__form .tpl-form__err,
+.tpl-final__form .tpl-form__err{color:#FF9B84}
+.tpl-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+
+/* ─────────────── 19 · ЛИПКАЯ ПАНЕЛЬ (мобильная) ─────────────── */
+
+/* ─────────────── ОБЩЕЕ ─────────────── */
+.tpl-note{
+  font-size:13px;line-height:20px;color:var(--tpl-text-secondary);margin-top:16px;
+}
+.tpl-note--foot{text-align:center;padding:var(--tpl-space-6) 0 var(--tpl-space-4);margin-top:0}
+.tpl-badge{
+  display:inline-flex;align-items:center;height:24px;padding:0 10px;
+  border-radius:var(--tpl-radius-pill);background:var(--tpl-accent-tint);
+  color:var(--tpl-accent-hover);font-size:12px;font-weight:var(--tpl-fw-medium);
+}
+
+/* ══════════════════════════════════════════════════════════
+   МОБИЛЬНЫЕ. Отдельно, не вперемешку с десктопом.
+   53 % трафика, и они конвертят в 1,7 раза хуже.
+   ══════════════════════════════════════════════════════════ */
+@media (max-width:991px){
+  .tpl-calc{grid-template-columns:1fr}
+  .tpl-calc__out{grid-column:1;grid-row:1;position:static}
+  .tpl-calc__form{grid-column:1;grid-row:2}
+  .tpl-scope__grid,.tpl-cases__grid{grid-template-columns:1fr}
+  .tpl-cat__grid{grid-template-columns:repeat(3,1fr)}
+  .tpl-cat__grid > :nth-child(n+10){display:none}
+  .tpl-cat__grid.tpl-full > :nth-child(n+10):not([hidden]){display:flex}
+  .tpl-live{grid-template-columns:repeat(2,1fr)}
+  .tpl-live__item--wide{grid-column:span 2}
+  .tpl-root .tpl-live__item img{height:auto;aspect-ratio:4/3}
+  .tpl-root .tpl-live__item--wide img{aspect-ratio:8/3}
+  .tpl-venue__grid,.tpl-docs__grid,.tpl-kit__grid{grid-template-columns:repeat(2,1fr)}
+  .tpl-steps{grid-template-columns:repeat(2,1fr)}
+  .tpl-final__grid{grid-template-columns:1fr;gap:var(--tpl-space-6)}
+}
+
+@media (max-width:768px){
+  .tpl-byuro{grid-template-columns:1fr;gap:var(--tpl-space-5)}
+  .tpl-root .tpl-strip img{height:240px}
+  .tpl-lb{padding:12px}
+  .tpl-root .tpl-lb__img{max-width:100%}
+  .tpl-lb__nav{width:36px;height:36px;margin-top:-18px;background:rgba(255,255,255,.2)}
+  .tpl-lb__nav--prev{left:6px}
+  .tpl-lb__nav--prev::before{left:13px;top:11px}
+  .tpl-lb__nav--next{right:6px}
+  .tpl-lb__nav--next::before{left:9px;top:11px}
+  .tpl-band{height:auto;min-height:0}
+  .tpl-root .tpl-band img{position:relative;height:auto;aspect-ratio:4/3}
+  .tpl-band::after{height:auto;bottom:auto;aspect-ratio:4/3}
+  .tpl-band__in{
+    position:static;flex-direction:column;align-items:stretch;
+    gap:var(--tpl-space-4);padding:var(--tpl-space-5) var(--tpl-container-pad);
+  }
+  .tpl-band__title{font-size:24px;line-height:32px}
+  .tpl-band__text p{font-size:15px;line-height:22px;margin-top:var(--tpl-space-2)}
+  .tpl-band__form,.tpl-band__done{flex:1 1 auto;background:rgba(255,255,255,.08);backdrop-filter:none}
+  /* Бюджет первого экрана на телефоне жёсткий: из ~660 px вьюпорта
+     сайтовая шапка забирает около 102, нижняя панель 64, хлебные крошки
+     ещё 40. Нам остаётся примерно 430 px, и в них должны поместиться
+     заголовок, строка с цифрой и одно действие. Поэтому здесь режется
+     всё, что на десктопе помогает, а тут выталкивает кнопку за сгиб. */
+  .tpl-hero{border-radius:0 0 24px 24px}
+  .tpl-root .tpl-hero__bg{opacity:.5;object-position:60% 50%}
+  .tpl-hero__scrim{background:linear-gradient(to top,rgba(49,45,43,.95) 30%,rgba(49,45,43,.8) 70%,rgba(49,45,43,.7) 100%)}
+  .tpl-hero__inner{padding:24px 0 28px}
+  .tpl-hero__eyebrow{display:none}
+  .tpl-hero__title{font-size:24px;line-height:32px;margin-bottom:12px}
+  .tpl-hero__sub{font-size:15px;line-height:22px}
+      .tpl-hero__acts{flex-direction:column;align-items:stretch;gap:10px;margin-top:16px}
+  .tpl-hero__acts .tpl-btn{width:100%}
+  /* телефон в первом экране — текстовой ссылкой, не второй кнопкой:
+     две одинаковые кнопки подряд спорят друг с другом */
+  .tpl-root .tpl-hero__acts .tpl-btn--ghost{
+    height:auto;padding:4px 0;border:0;background:none;
+    text-decoration:underline;text-underline-offset:3px;
+    color:rgba(255,255,255,.8);font-size:15px;
+  }
+      
+  /* на 390 px колонка подписи съедает треть ширины, и чипы начинают
+     переноситься по два в ряд. Кладём подпись над ними. */
+  .tpl-row{grid-template-columns:1fr;gap:8px;padding:10px 0}
+  .tpl-row__label{font-size:13px}
+  .tpl-calc__out{padding:20px}
+  .tpl-calc__answer{font-size:21px;line-height:28px}
+  .tpl-calc__total-sum{font-size:32px;line-height:40px}
+  .tpl-calc__total{gap:8px}
+  .tpl-calc__acts{flex-direction:column;align-items:stretch}
+  .tpl-calc__acts .tpl-btn{width:100%}
+  .tpl-calc__form{padding:12px 16px}
+  /* доказательства в колонку: три в ряд на 390 px не читаются */
+  .tpl-top{border-radius:0 0 24px 24px}
+  .tpl-proof{padding:20px 0 28px}
+  .tpl-proof__item{padding-top:12px}
+  .tpl-proof__grid{grid-template-columns:1fr;gap:16px}
+  .tpl-proof__item{position:relative;padding-top:16px}
+.tpl-proof__item::before{
+  content:'';position:absolute;left:0;top:0;
+  width:28px;height:3px;border-radius:2px;background:var(--tpl-accent);
+}
+.tpl-proof__item b{font-size:15px;line-height:22px;margin-bottom:2px}
+  .tpl-proof__item span{font-size:14px;line-height:20px}
+  .tpl-hero__inner{padding:40px 0 44px}
+  .tpl-hero__acts{margin-top:24px}
+  .tpl-section{padding:var(--tpl-section-y-mob) 0}
+  .tpl-section__title{font-size:24px;line-height:32px}
+  .tpl-intro{font-size:16px;line-height:24px}
+
+  /* калькулятор: ни одного поля с клавиатурой в основном пути —
+     только пресеты тапами. Ручной ввод спрятан под ссылку. */
+  .tpl-calc__form{padding:16px}
+  .tpl-calc__out{padding:20px}
+  .tpl-calc__total-sum{font-size:28px;line-height:36px}
+  .tpl-chips{gap:6px}
+  .tpl-root .tpl-chip{height:42px;padding:0 14px;font-size:14px}
+  .tpl-root .tpl-chip--two{height:auto;padding:7px 12px}
+  .tpl-chip__name{font-size:13px;line-height:18px}
+  .tpl-chip__cap{font-size:11px;line-height:15px}
+
+  /* сколько карточек видно, на телефоне решает скрипт: сначала три,
+     дальше по пять за нажатие */
+  .tpl-cat__grid{grid-template-columns:1fr}
+  /* потолки в 12 и 9 карточек с широких экранов здесь мешают: сколько
+     показано, считает скрипт */
+  .tpl-cat__grid > :nth-child(n+10):not([hidden]):not(.tpl-hide){display:flex}
+  .tpl-cat__grid > .tpl-hide{display:none}
+  .tpl-cat__filters{
+    margin-inline:calc(var(--tpl-container-pad) * -1);
+    padding-inline:var(--tpl-container-pad);
+    overflow-x:auto;flex-wrap:nowrap;
+  }
+  .tpl-cat__fgroup{flex-wrap:nowrap}
+
+  .tpl-case{grid-template-columns:1fr}
+  .tpl-root .tpl-case__img{min-height:180px;max-height:220px}
+  .tpl-case__body{padding:16px}
+
+  /* ── Слайдеры вместо колонок ───────────────────────────────────
+     В одну колонку плитки растягивали страницу на несколько экранов:
+     до кейсов и бухгалтерии просто не доезжали. Едем вбок, карточка
+     занимает 82 % ширины — видно, что следующая рядом. */
+  .tpl-kit__grid,
+  .tpl-live,
+  .tpl-cases__grid,
+  .tpl-docs__grid,
+  .tpl-steps,
+  .tpl-venue__grid{
+    display:flex;overflow-x:auto;scroll-snap-type:x mandatory;
+    gap:var(--tpl-grid-gap);scrollbar-width:none;-webkit-overflow-scrolling:touch;
+  }
+  .tpl-kit__grid::-webkit-scrollbar,
+  .tpl-live::-webkit-scrollbar,
+  .tpl-cases__grid::-webkit-scrollbar,
+  .tpl-docs__grid::-webkit-scrollbar,
+  .tpl-steps::-webkit-scrollbar,
+  .tpl-venue__grid::-webkit-scrollbar{display:none}
+  .tpl-kit__grid > *,
+  .tpl-live > *,
+  .tpl-cases__grid > *,
+  .tpl-docs__grid > *,
+  .tpl-steps > *,
+  .tpl-venue__grid > *{flex:0 0 82%;scroll-snap-align:start}
+  /* эти четыре лежат прямо в контейнере — пускаем ленту до края экрана */
+  .tpl-kit__grid,
+  .tpl-live,
+  .tpl-cases__grid,
+  .tpl-docs__grid,
+  .tpl-steps{
+    margin-inline:calc(var(--tpl-container-pad) * -1);
+    padding:0 var(--tpl-container-pad) 4px;
+    /* без этого прилипание съедает левый отступ: карточка встаёт вплотную к краю */
+    scroll-padding-inline:var(--tpl-container-pad);
+  }
+  .tpl-live__item{min-height:0}
+  .tpl-root .tpl-live__item--wide img{aspect-ratio:4/3}
+  .tpl-step{padding-right:4px}
+
+  /* темы — три ряда вбок: одиннадцать чипов в столбик занимали пол-экрана */
+  .tpl-chips[data-calc="themes"]{
+    display:grid;grid-auto-flow:column;grid-auto-columns:max-content;
+    grid-template-rows:repeat(3,auto);gap:8px;
+    overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;
+    padding-bottom:4px;
+  }
+  .tpl-chips[data-calc="themes"]::-webkit-scrollbar{display:none}
+  .tpl-chips[data-calc="themes"] > *{scroll-snap-align:start}
+
+  /* перелинковка — два ряда вбок */
+  .tpl-tags{
+    display:grid;grid-auto-flow:column;grid-auto-columns:max-content;
+    grid-template-rows:repeat(2,auto);gap:8px;
+    overflow-x:auto;scrollbar-width:none;
+    margin-inline:calc(var(--tpl-container-pad) * -1);
+    padding:0 var(--tpl-container-pad) 4px;
+  }
+  .tpl-tags::-webkit-scrollbar{display:none}
+
+  /* таблица пропускной способности: на 390 px она не читается даже
+     с прокруткой вбок — на телефоне её нет */
+  #tpl-throughput{display:none}
+
+  /* факты в финале: на узком экране подпись уезжала лесенкой вправо */
+  .tpl-final__facts li{flex-direction:column;gap:2px}
+  .tpl-final__form{padding:var(--tpl-space-5)}
+
+}
