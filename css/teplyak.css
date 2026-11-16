@@ -357,7 +357,7 @@
 .tpl-heat{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--tpl-grid-gap);margin-top:40px}
 .tpl-root .tpl-heat__item{
   display:flex;flex-direction:column;border-radius:var(--tpl-radius-lg);overflow:hidden;
-  background:#E6E6E6;color:var(--tpl-ink);transition:transform .2s ease;
+  border:var(--tpl-border);background:var(--tpl-surface-card);color:var(--tpl-ink);transition:transform .2s ease;
 }
 .tpl-root .tpl-heat__item img{width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
 .tpl-heat__item b{padding:0 18px;font-size:16px;line-height:22px;font-weight:var(--tpl-fw-medium)}
